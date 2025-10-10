@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -15,7 +14,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "celestial_object")
-public class PlanetaryObject {
+public class CelestialObject {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
