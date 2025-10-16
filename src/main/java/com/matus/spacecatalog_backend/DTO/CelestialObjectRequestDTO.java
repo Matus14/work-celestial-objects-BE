@@ -40,7 +40,5 @@ public class CelestialObjectRequestDTO {
     @NotBlank(message = "Image URL is required")
     private String imageMainUrl;
 
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    private LocalDateTime createdAt = LocalDateTime.now();
 
 }
