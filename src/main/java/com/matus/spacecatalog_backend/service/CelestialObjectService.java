@@ -22,14 +22,14 @@ public class CelestialObjectService {
     private CelestialObjectRepository repository;
 
     @Transactional
-    public CelestialObject create( CelestialObject object) {
+    public CelestialObject create(CelestialObject object) {
 
-        if(object.getObjectName() == null || object.getObjectName().isBlank()) {
+        if(object.getObjectName() == null || object.getObjectName().isBlank()){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Object name cant be null or empty");
         }
 
-        repository.findByObjectName(object.getObjectName()).ifPresent(existing -> {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Celestial name already exists");
+        repository.findByObjectName(object.getObjectName()).ifPresent(e -> {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Object name already exists");
         });
 
         if(object.getObjectDesignation() != null || !object.getObjectDesignation().isBlank()){
@@ -37,12 +37,12 @@ public class CelestialObjectService {
                 throw new ResponseStatusException(HttpStatus.CONFLICT, "Celestial designation already exists");
             });
         }
-
-       return repository.save(object);
+        return repository.save(object);
     }
 
+
     @Transactional(readOnly = true)
-    public Page<CelestialObject> findAll(Pageable pageable) {
+    public Page<CelestialObject> findAll(Pageable pageable){
         return repository.findAll(pageable);
     }
 
@@ -50,29 +50,29 @@ public class CelestialObjectService {
     public CelestialObject findById(Long id) {
 
         CelestialObject existingObject = repository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Celestial object not found by ID"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found with ID"));
 
         return existingObject;
     }
 
-    @Transactional
-    public void delete(Long id) {
-        if(!repository.existsById(id)){
+
+    @Transactional(readOnly = true)
+    public void delete(Long id){
+        if(!repository.existsById(id)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found for delete");
         }
-
         repository.deleteById(id);
     }
 
     @Transactional
-    public CelestialObject updateObject (Long id, CelestialObject updatedData){
+    public CelestialObject updateObject(Long id, CelestialObject updatedData) {
 
         CelestialObject existing = repository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Celestial object not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Object  not found"));
 
-        if(!Objects.equals(existing.getObjectName(), updatedData.getObjectName())) {
-            repository.findByObjectName(updatedData.getObjectName()).ifPresent(other -> {
-                if(!other.getId().equals(id)){
+        if(!Objects.equals(existing.getObjectName(), updatedData.getObjectName())){
+            repository.findByObjectName(updatedData.getObjectName()).ifPresent(e ->{
+                if(!e.getId().equals(id)){
                     throw new ResponseStatusException(HttpStatus.CONFLICT, "Object name already exists");
                 }
             });
@@ -81,11 +81,12 @@ public class CelestialObjectService {
         if(!Objects.equals(existing.getObjectDesignation(), updatedData.getObjectDesignation())
                 && updatedData.getObjectDesignation() != null
                 && !updatedData.getObjectDesignation().isBlank()) {
-            repository.findByObjectDesignation(updatedData.getObjectDesignation()).ifPresent(other -> {
-                if(!other.getId().equals(id)){
+            repository.findByObjectDesignation(updatedData.getObjectDesignation()).ifPresent(e -> {
+                if(!e.getId().equals(id)){
                     throw new ResponseStatusException(HttpStatus.CONFLICT, "Object designation already exists");
                 }
             });
+
         }
 
         existing.setObjectName(updatedData.getObjectName());
@@ -99,17 +100,13 @@ public class CelestialObjectService {
         existing.setImageMainUrl(updatedData.getImageMainUrl());
 
         return repository.save(existing);
-
     }
 
-    @Transactional(readOnly = true)
     public Page<CelestialObject> findByType(String objectType, Pageable pageable){
 
-        if(objectType == null || objectType.isBlank()) {
+        if (objectType == null || objectType.isBlank()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Object type cant be null or empty");
         }
-
         return repository.findAllObjectType(objectType, pageable);
     }
-
 }
