@@ -34,11 +34,10 @@ public class CelestialObjectRequestDTO {
     private Double objectMassToEarth;
 
     @NotBlank(message = "Object description is required")
-    @Size(max = 300, message = "Description must not exceed 300 cahracters")
+    @Size(max = 300, message = "Description must not exceed 300 characters")
     private String shortDescription;
 
     @NotBlank(message = "Image URL is required")
     private String imageMainUrl;
-
 
 }
