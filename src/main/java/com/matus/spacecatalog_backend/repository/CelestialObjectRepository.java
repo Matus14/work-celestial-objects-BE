@@ -14,7 +14,7 @@ public interface CelestialObjectRepository extends JpaRepository<CelestialObject
     Optional<CelestialObject> findByObjectName(String objectName);
     Optional<CelestialObject> findByObjectDesignation(String objectDesignation);
 
-    Page<CelestialObject> findAllObjectType(String objectType, Pageable pageable);
+    Page<CelestialObject> findAllByObjectType(String objectType, Pageable pageable);
     Page<CelestialObject> findAllByDiscoveryYearBetween(Integer from, Integer to, Pageable pageable);
     Page<CelestialObject> findAllByShortDescriptionContainingIgnoreCase(String q, Pageable pageable);
     Page<CelestialObject> findAllByCreatedAtBetween(LocalDateTime from, LocalDateTime to, Pageable pageable);

@@ -13,9 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 @Service
 public class CelestialObjectService {
@@ -94,7 +92,7 @@ public class CelestialObjectService {
         if(objectType == null || objectType.isBlank()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Type cant be null or empty");
         }
-        return repository.findAllObjectType(objectType.trim(), pageable).map(this::toDto);
+        return repository.findAllByObjectType(objectType.trim(), pageable).map(this::toDto);
     }
 
     public CelestialObjectResponseDTO updateObject(Long id, CelestialObjectRequestDTO updatedData){
