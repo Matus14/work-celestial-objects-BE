@@ -35,7 +35,7 @@ public class CelestialObject {
     @Column(nullable = false)
     private Double distanceFromSunAu;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "object_speed_km_s")
     private Double objectSpeedKmS;
 
     @Column(nullable = false)
