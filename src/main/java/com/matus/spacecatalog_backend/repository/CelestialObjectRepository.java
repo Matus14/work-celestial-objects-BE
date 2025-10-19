@@ -11,6 +11,7 @@ import java.util.Optional;
 
 public interface CelestialObjectRepository extends JpaRepository<CelestialObject, Long> {
     boolean existsByObjectName(String objectName);
+    boolean existsByObjectDesignation(String objectDesignation);
     Optional<CelestialObject> findByObjectName(String objectName);
     Optional<CelestialObject> findByObjectDesignation(String objectDesignation);
 
