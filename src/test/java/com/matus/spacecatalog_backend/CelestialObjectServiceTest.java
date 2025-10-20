@@ -272,6 +272,69 @@ public class CelestialObjectServiceTest {
     }
 
 
+                                // ====== FIND BY ID ======
+
+    @Test
+    void findById_whenExistsReturn(){
+
+        CelestialObject c1= CelestialObject.builder()
+                .id(4L)
+                .objectName("Mars")
+                .objectType("Planet")
+
+                .build();
+
+        when(repository.findById(4L)).thenReturn(Optional.of(c1));
+
+        CelestialObjectResponseDTO dto = service.findById(4L);
+
+        assertThat(dto.getObjectName()).isEqualTo("Mars");
+        assertThat(dto.getObjectType()).isEqualTo("Planet");
+        assertThat(dto.getId()).isEqualTo(4L);
+
+        verify(repository).findById(4L);
+    }
+
+    @Test
+    void findById_whenIdIsEmpty_thenThrowNotFound(){
+
+        when(repository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(()-> service.findById(1L))
+                .isInstanceOfSatisfying(ResponseStatusException.class, ex ->
+                assertThat(ex.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND)
+                )
+                .hasMessageContaining("Object not found");
+
+        verify(repository).findById(1L);
+    }
 
 
+                                        // ====== DELETE =====
+    @Test
+    void delete_whenIdExists_thenDelete(){
+
+        when(repository.existsById(4L)).thenReturn(true);
+
+        service.delete(4L);
+
+        verify(repository).existsById(4L);
+        verify(repository).deleteById(4L);
+    }
+
+
+    @Test
+    void delete_whenIdNotExists_thenThrowNotFound(){
+
+        when(repository.existsById(4L)).thenReturn(false);
+
+        assertThatThrownBy(() -> service.delete(4L))
+                .isInstanceOfSatisfying(ResponseStatusException.class, ex ->
+                assertThat(ex.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND)
+                )
+                .hasMessageContaining("Not found for delete");
+
+        verify(repository).existsById(4L);
+        verify(repository, never()).deleteById(anyLong());
+    }
 }
