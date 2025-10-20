@@ -337,4 +337,174 @@ public class CelestialObjectServiceTest {
         verify(repository).existsById(4L);
         verify(repository, never()).deleteById(anyLong());
     }
+
+
+                                     // ====== UPDATE =======
+
+    @Test
+    void update_whenEntityIsStored_checkTheValuesAreCorrect() {
+
+        CelestialObjectRequestDTO request = new CelestialObjectRequestDTO();
+        request.setObjectName("C");
+        request.setObjectType("P");
+        request.setObjectDesignation("O");
+        request.setDiscoveryYear(1600);
+        request.setDistanceFromSunAu(2.1);
+        request.setObjectMassToEarth(6.4);
+        request.setObjectSpeedKmS(154.4);
+        request.setShortDescription("OO");
+        request.setImageMainUrl("ll");
+
+        CelestialObject oldObject = CelestialObject.builder()
+                .id(1L)
+                .objectName("Mars")
+                .objectType("OldType")
+                .objectDesignation("OldDes")
+                .discoveryYear(1500)
+                .distanceFromSunAu(1.0)
+                .objectSpeedKmS(100.0)
+                .objectMassToEarth(0.5)
+                .shortDescription("Old description")
+                .imageMainUrl("old-url")
+                .build();
+
+        when(repository.findById(1L)).thenReturn(Optional.of(oldObject));
+        when(repository.findByObjectName("C")).thenReturn(Optional.empty());
+        when(repository.findByObjectDesignation("O")).thenReturn(Optional.empty());
+
+        when(repository.save(any(CelestialObject.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        ArgumentCaptor<CelestialObject> captor = ArgumentCaptor.forClass(CelestialObject.class);
+
+        CelestialObjectResponseDTO dto = service.updateObject(1L, request);
+
+        assertThat(dto.getId()).isEqualTo(1L);
+        assertThat(dto.getObjectName()).isEqualTo("C");
+        assertThat(dto.getObjectType()).isEqualTo("P");
+        assertThat(dto.getObjectDesignation()).isEqualTo("O");
+
+        verify(repository).findById(1L);
+        verify(repository).findByObjectName("C");
+        verify(repository).findByObjectDesignation("O");
+        verify(repository).save(captor.capture());
+
+        CelestialObject saved = captor.getValue();
+        assertThat(saved.getId()).isEqualTo(1L);
+        assertThat(saved.getObjectName()).isEqualTo("C");
+        assertThat(saved.getObjectType()).isEqualTo("P");
+        assertThat(saved.getObjectDesignation()).isEqualTo("O");
+        assertThat(saved.getDiscoveryYear()).isEqualTo(1600);
+        assertThat(saved.getDistanceFromSunAu()).isCloseTo(2.1, within(1e-9));
+        assertThat(saved.getObjectSpeedKmS()).isCloseTo(154.4, within(1e-9));
+        assertThat(saved.getObjectMassToEarth()).isCloseTo(6.4, within(1e-9));
+        assertThat(saved.getShortDescription()).isEqualTo("OO");
+        assertThat(saved.getImageMainUrl()).isEqualTo("ll");
+    }
+
+
+    @Test
+    void update_whenObjectNameAlreadyExists_thenThrowConflict(){
+
+        CelestialObjectRequestDTO request = new CelestialObjectRequestDTO();
+        request.setObjectName("C");
+        request.setObjectType("P");
+        request.setObjectDesignation("O");
+        request.setDiscoveryYear(1600);
+        request.setDistanceFromSunAu(2.1);
+        request.setObjectMassToEarth(6.4);
+        request.setObjectSpeedKmS(154.4);
+        request.setShortDescription("OO");
+        request.setImageMainUrl("ll");
+
+        CelestialObject existing = CelestialObject.builder()
+                .id(1L)
+                .objectName("Mars")
+                .objectType("Planet")
+                .build();
+
+        CelestialObject other = CelestialObject.builder()
+                .id(2L)
+                .objectName("C")
+                .build();
+
+        when(repository.findById(1L)).thenReturn(Optional.of(existing));
+        when(repository.findByObjectName("C")).thenReturn(Optional.of(other));
+
+        assertThatThrownBy(() -> service.updateObject(1L, request))
+                .isInstanceOfSatisfying(ResponseStatusException.class, ex ->
+                        assertThat(ex.getStatusCode()).isEqualTo(HttpStatus.CONFLICT)
+                )
+                .hasMessageContaining("Name already exists");
+
+        verify(repository).findById(1L);
+        verify(repository).findByObjectName("C");
+        verify(repository, never()).save(any());
+    }
+
+    @Test
+    void update_whenObjectDesignationAlreadyExists_thenThrowConflict() {
+
+        CelestialObjectRequestDTO request = new CelestialObjectRequestDTO();
+        request.setObjectName("C");
+        request.setObjectType("P");
+        request.setObjectDesignation("O");
+        request.setDiscoveryYear(1600);
+        request.setDistanceFromSunAu(2.1);
+        request.setObjectMassToEarth(6.4);
+        request.setObjectSpeedKmS(154.4);
+        request.setShortDescription("OO");
+        request.setImageMainUrl("ll");
+
+        CelestialObject existing = CelestialObject.builder()
+                .id(1L)
+                .objectName("Mars")
+                .objectDesignation("OLD_DES")
+                .build();
+
+        CelestialObject other = CelestialObject.builder()
+                .id(2L)
+                .objectDesignation("O")
+                .build();
+
+        when(repository.findById(1L)).thenReturn(Optional.of(existing));
+        when(repository.findByObjectDesignation("O")).thenReturn(Optional.of(other));
+
+        assertThatThrownBy(() -> service.updateObject(1L, request))
+                .isInstanceOfSatisfying(ResponseStatusException.class, ex ->
+                        assertThat(ex.getStatusCode()).isEqualTo(HttpStatus.CONFLICT)
+                )
+                .hasMessageContaining("Designation already exists");
+
+        verify(repository).findById(1L);
+        verify(repository).findByObjectDesignation("O");
+        verify(repository, never()).save(any());
+    }
+
+    @Test
+    void update_whenIdNotFound_thenThrowNotFound() {
+
+        CelestialObjectRequestDTO request = new CelestialObjectRequestDTO();
+        request.setObjectName("C");
+        request.setObjectType("P");
+        request.setObjectDesignation("O");
+        request.setDiscoveryYear(1600);
+        request.setDistanceFromSunAu(2.1);
+        request.setObjectMassToEarth(6.4);
+        request.setObjectSpeedKmS(154.4);
+        request.setShortDescription("OO");
+        request.setImageMainUrl("ll");
+
+
+        when(repository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> service.updateObject(1L, request))
+                .isInstanceOfSatisfying(ResponseStatusException.class, ex ->
+                        assertThat(ex.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND)
+                )
+                .hasMessageContaining("Object not found");
+
+        verify(repository).findById(1L);
+        verifyNoMoreInteractions(repository);
+    }
+
 }
