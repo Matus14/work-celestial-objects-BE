@@ -96,7 +96,7 @@ src
 | **V4** | `V4__trigger_updated_at.sql` | Creates trigger for auto-updating `updated_at` |
 
 
-AUTHOR
+## AUTHOR
 
 Created by Matúš Bučko as part of a full-stack educational portfolio project “Space Catalog”.
 The backend module was built using Spring Boot, PostgreSQL, Flyway, and REST API architecture, focusing on clean design, modularity, and real-world backend development practices.
