@@ -88,15 +88,15 @@ public class CelestialObjectServiceTest {
         verify(repository).save(celestialCaptor.capture());
         CelestialObject saved = celestialCaptor.getValue();
 
-        assertThat(dto.getObjectName()).isEqualTo("C");
-        assertThat(dto.getObjectType()).isEqualTo("P");
-        assertThat(dto.getObjectDesignation()).isEqualTo("O");
-        assertThat(dto.getDiscoveryYear()).isEqualTo(1600);
-        assertThat(dto.getDistanceFromSunAu()).isCloseTo(2.1, within(1e-9));
-        assertThat(dto.getObjectMassToEarth()).isCloseTo(6.4, within(1e-9));
-        assertThat(dto.getObjectSpeedKmS()).isCloseTo(154.4, within(1e-9));
-        assertThat(dto.getShortDescription()).isEqualTo("OO");
-        assertThat(dto.getImageMainUrl()).isEqualTo("ll");
+        assertThat(saved.getObjectName()).isEqualTo("C");
+        assertThat(saved.getObjectType()).isEqualTo("P");
+        assertThat(saved.getObjectDesignation()).isEqualTo("O");
+        assertThat(saved.getDiscoveryYear()).isEqualTo(1600);
+        assertThat(saved.getDistanceFromSunAu()).isCloseTo(2.1, within(1e-9));
+        assertThat(saved.getObjectMassToEarth()).isCloseTo(6.4, within(1e-9));
+        assertThat(saved.getObjectSpeedKmS()).isCloseTo(154.4, within(1e-9));
+        assertThat(saved.getShortDescription()).isEqualTo("OO");
+        assertThat(saved.getImageMainUrl()).isEqualTo("ll");
     }
 
 
